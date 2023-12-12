@@ -52,12 +52,16 @@ public class Firebase_Manager : MonoBehaviour
     public FirebaseAuth FbAuth;
     public DatabaseReference FbDatabase;
 
+    public int userui;
+
     private void Awake()
     {
         passwordLoginToggleText = passwordLoginToggle.GetComponentInChildren<Text>(); // ambil komponen teks toggle di children
         passwordRegisterToggleText = passwordRegisterToggle.GetComponentInChildren<Text>(); // ambil komponen teks toggle di children
 
         StartCoroutine(CheckFirebase()); // start coroutine (nama fungsi) adalah syntax untuk memanggil fungsi bertipe IENumerator
+        userui = PlayerPrefs.GetInt("UserUI");
+        Debug.Log(userui);
     }
 
     void Start()
@@ -136,6 +140,8 @@ public class Firebase_Manager : MonoBehaviour
             yield return new WaitUntil(() => reloadUserTask.IsCompleted); // membaca ulang data user dari console firebase
 
             AutoLogin();
+
+
         }
     }
 
@@ -144,8 +150,18 @@ public class Firebase_Manager : MonoBehaviour
         if (FbUser != null) // ekstra pengecekan untuk lebih memastikan user
         {
             UserID = FbUser.UserId;
-            StartCoroutine(AutoLoginTransition());
-            Debug.Log("Auto Login Success!!");
+            int userui = PlayerPrefs.GetInt("UserUI");
+
+            if (userui != 1)//User belum main 
+            {
+                StartCoroutine(AutoLoginTransition());
+                Debug.Log("Auto Login Success!!");
+            }
+            else if (userui == 1)// User sedang main
+            {
+                MainMenuUI.SetActive(false);
+                UserUI.SetActive(true);
+            }
         }
 
         else
@@ -552,7 +568,7 @@ public class Firebase_Manager : MonoBehaviour
     {
         yield return new WaitForSeconds(0.8f);
         LoginUI.SetActive(false);
-        UserUI.SetActive(true);
+        UserUI.SetActive(false);
 
         // Check if PlayerNameInputField is assigned
         if (PlayerNameInputField != null)
@@ -583,6 +599,7 @@ public class Firebase_Manager : MonoBehaviour
 
         UserUI.SetActive(false);
         MainMenuUI.SetActive(true);
+        PlayerPrefs.SetInt("UserUI", 0);
     }
     void Update()
     {
