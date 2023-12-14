@@ -2,28 +2,53 @@ using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;  // Import the UI namespace
+using UnityEngine.UI;
 using TMPro;
 
 public class StartGameScene : MonoBehaviour
 {
-    public InputField playerNameInputField;  // Change the type to Text
+    public InputField playerNameInputField;
 
     void Start()
     {
-        // Check if the player name parameter exists
         if (PlayerPrefs.HasKey("playername"))
         {
-            // Retrieve the player name from PlayerPrefs
             string playerName = PlayerPrefs.GetString("playername");
-
-            // Set the player name in your UI or do any other necessary operations
             playerNameInputField.text = playerName;
+
+            // Find the ScoreboardCanvas in the scene
+            ScoreboardCanvas scoreboardCanvas = FindObjectOfType<ScoreboardCanvas>();
+            if (scoreboardCanvas != null)
+            {
+                // Set the player name in the ScoreboardCanvas
+                scoreboardCanvas.SetPlayerName(playerName);
+            }
+            else
+            {
+                Debug.LogError("ScoreboardCanvas not found in the scene!");
+            }
         }
         else
         {
-            // Handle the case where the player name parameter is not present
             Debug.LogError("Player name parameter not found!");
+        }
+    }
+
+    public void SetPlayerName()
+    {
+        string playerName = playerNameInputField.text;
+        PlayerPrefs.SetString("playername", playerName);
+
+        // Find the ScoreboardCanvas in the scene
+        ScoreboardCanvas scoreboardCanvas = FindObjectOfType<ScoreboardCanvas>();
+        if (scoreboardCanvas != null)
+        {
+            // Set the player name in the ScoreboardCanvas
+            scoreboardCanvas.SetPlayerName(playerName);
+        }
+        else
+        {
+            Debug.LogError("ScoreboardCanvas not found in the scene!");
         }
     }
 
