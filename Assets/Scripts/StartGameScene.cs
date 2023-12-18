@@ -28,10 +28,6 @@ public class StartGameScene : MonoBehaviour
                 Debug.LogError("ScoreboardCanvas not found in the scene!");
             }
         }
-        else
-        {
-            Debug.LogError("Player name parameter not found!");
-        }
     }
 
     public void SetPlayerName()

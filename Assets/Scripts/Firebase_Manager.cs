@@ -73,14 +73,34 @@ public class Firebase_Manager : MonoBehaviour
         RegisterUI.SetActive(false);
         LeaderBoardUI.SetActive(false);
 
-        passwordLoginToggle.isOn = false; // toggle ga dicentang
-        passwordLoginToggleText.text = "Show password"; // ngubah komponen teks toggle
-        passwordLogin.contentType = TMP_InputField.ContentType.Password; // konten input password hidden (bintang2)
+        confirmPasswordRegister.contentType = TMP_InputField.ContentType.Password;
+    }
 
-        passwordRegisterToggle.isOn = false; // toggle ga dicentang
-        passwordRegisterToggleText.text = "Show password"; // ngubah komponen teks toggle
-        passwordRegister.contentType = TMP_InputField.ContentType.Password; // konten input password hidden (bintang2)
-        confirmPasswordRegister.contentType = TMP_InputField.ContentType.Password; // konten input password hidden (bintang2)
+    void SetPasswordToggle(Toggle toggle, TextMeshProUGUI toggleText, TMP_InputField passwordInput)
+    {
+        toggle.isOn = false; // toggle ga dicentang
+        toggleText.text = "Show password"; // ngubah komponen teks toggle
+        passwordInput.contentType = TMP_InputField.ContentType.Password; // konten input password hidden (bintang2)
+
+        // Menghubungkan fungsi toggle ke method TogglePasswordVisibility
+        toggle.onValueChanged.AddListener((value) => TogglePasswordVisibility(value, toggleText, passwordInput));
+    }
+
+    void TogglePasswordVisibility(bool isVisible, TextMeshProUGUI toggleText, TMP_InputField passwordInput)
+    {
+        if (isVisible)
+        {
+            toggleText.text = "Hide password";
+            passwordInput.contentType = TMP_InputField.ContentType.Standard;
+        }
+        else
+        {
+            toggleText.text = "Show password";
+            passwordInput.contentType = TMP_InputField.ContentType.Password;
+        }
+
+        // Pembaruan tampilan password input
+        passwordInput.ForceLabelUpdate();
     }
 
     private IEnumerator CheckFirebase()
@@ -141,6 +161,10 @@ public class Firebase_Manager : MonoBehaviour
             yield return new WaitUntil(() => reloadUserTask.IsCompleted); // membaca ulang data user dari console firebase
 
             AutoLogin();
+        }
+        else
+        {
+
         }
     }
 
@@ -323,12 +347,20 @@ public class Firebase_Manager : MonoBehaviour
         Debug.Log("nilai defeat yang akan dikirim: " + stats2.text);
         Debug.Log("nilai experience yang akan dikirim: " + stats3.text);
 
-        StartCoroutine(UpdateUserAuth());
-        StartCoroutine(UpdateUserDatabase());
+        int stat1Value, stat2Value, stat3Value;
 
-        StartCoroutine(UpdateStat1(int.Parse(stats1.text)));
-        StartCoroutine(UpdateStat2(int.Parse(stats2.text)));
-        StartCoroutine(UpdateStat3(int.Parse(stats3.text)));
+        if (int.TryParse(stats1.text, out stat1Value) &&
+            int.TryParse(stats2.text, out stat2Value) &&
+            int.TryParse(stats3.text, out stat3Value))
+        {
+            StartCoroutine(UpdateStat1(stat1Value));
+            StartCoroutine(UpdateStat2(stat2Value));
+            StartCoroutine(UpdateStat3(stat3Value));
+        }
+        else
+        {
+            Debug.LogError("Invalid input. Please enter valid integer values.");
+        }
     }
 
     public void ResetUserDataButton()
@@ -575,6 +607,7 @@ public class Firebase_Manager : MonoBehaviour
             // Set the player name in PlayerNameInputField
             PlayerNameInputField.text = Username;
         }
+
         isCursorLocked = !isCursorLocked;
         Cursor.lockState = isCursorLocked ? CursorLockMode.Locked : CursorLockMode.None;
         Cursor.visible = !isCursorLocked;

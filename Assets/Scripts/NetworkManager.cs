@@ -8,6 +8,7 @@ using TMPro;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
+    [Header("UI Elements")]
     [SerializeField] private Text connectionText;
     [SerializeField] private Transform[] spawnPoints;
     [SerializeField] private Camera sceneCamera;
@@ -26,6 +27,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     private Queue<string> messages;
     private const int messageCount = 10;
     private string nickNamePrefKey = "PlayerName";
+    private bool isCursorLocked = false;
 
     void Start()
     {
@@ -39,6 +41,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         PhotonNetwork.AutomaticallySyncScene = true;
         PhotonNetwork.ConnectUsingSettings();
         connectionText.text = "Connecting to lobby...";
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = false;
     }
 
     public override void OnConnectedToMaster()
@@ -62,6 +67,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         serverWindow.SetActive(true);
         connectionText.text = "";
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = false;
     }
 
     public override void OnRoomListUpdate(List<RoomInfo> rooms)
@@ -78,6 +86,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         serverWindow.SetActive(false);
         connectionText.text = "Joining room...";
 
+        // Set the username for the local player
         PhotonNetwork.LocalPlayer.NickName = username.text;
         PlayerPrefs.SetString(nickNamePrefKey, username.text);
 
@@ -100,9 +109,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         connectionText.text = "";
-        Cursor.lockState = CursorLockMode.Locked;
+
+        Cursor.lockState = CursorLockMode.None;
         Cursor.visible = false;
+
         Respawn(0.0f);
+        UpdateScoreboard();
     }
 
     void Respawn(float spawnTime)
@@ -159,6 +171,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnPlayerLeftRoom(Player other)
     {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
         if (PhotonNetwork.IsMasterClient)
         {
             AddMessage("Player " + other.NickName + " Left Game.");
