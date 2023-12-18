@@ -74,6 +74,9 @@ public class Firebase_Manager : MonoBehaviour
         LeaderBoardUI.SetActive(false);
 
         confirmPasswordRegister.contentType = TMP_InputField.ContentType.Password;
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     void SetPasswordToggle(Toggle toggle, TextMeshProUGUI toggleText, TMP_InputField passwordInput)

@@ -47,6 +47,9 @@ public class TimerSettings : MonoBehaviour
     {
         SceneManager.LoadScene("Backends");
         ActivateUserUI();
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true; 
     }
 
     void ActivateUserUI()

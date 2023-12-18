@@ -43,7 +43,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         connectionText.text = "Connecting to lobby...";
 
         Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = false;
+        Cursor.visible = true;
     }
 
     public override void OnConnectedToMaster()
@@ -67,9 +67,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         serverWindow.SetActive(true);
         connectionText.text = "";
-
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = false;
     }
 
     public override void OnRoomListUpdate(List<RoomInfo> rooms)
