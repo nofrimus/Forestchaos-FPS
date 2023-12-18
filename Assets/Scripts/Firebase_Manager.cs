@@ -53,6 +53,7 @@ public class Firebase_Manager : MonoBehaviour
     public DatabaseReference FbDatabase;
 
     public int userui;
+    private bool isCursorLocked = false;
 
     private void Awake()
     {
@@ -140,8 +141,6 @@ public class Firebase_Manager : MonoBehaviour
             yield return new WaitUntil(() => reloadUserTask.IsCompleted); // membaca ulang data user dari console firebase
 
             AutoLogin();
-
-
         }
     }
 
@@ -576,10 +575,9 @@ public class Firebase_Manager : MonoBehaviour
             // Set the player name in PlayerNameInputField
             PlayerNameInputField.text = Username;
         }
-        else
-        {
-            Debug.LogError("PlayerNameInputField is not assigned in the Inspector.");
-        }
+        isCursorLocked = !isCursorLocked;
+        Cursor.lockState = isCursorLocked ? CursorLockMode.Locked : CursorLockMode.None;
+        Cursor.visible = !isCursorLocked;
 
         // Load the Start
         SceneManager.LoadScene("Start", LoadSceneMode.Single);
@@ -600,38 +598,46 @@ public class Firebase_Manager : MonoBehaviour
         UserUI.SetActive(false);
         MainMenuUI.SetActive(true);
         PlayerPrefs.SetInt("UserUI", 0);
+
+
     }
     void Update()
     {
-        if (passwordLoginToggle.isOn) // kalau toggle dicentang
+        if (passwordLoginToggle.isOn)
         {
-            passwordLogin.contentType = TMP_InputField.ContentType.Standard; // konten input password biasa
-            passwordLoginToggleText.text = "Hide password"; // ngubah komponen teks toggle
+            passwordLogin.contentType = TMP_InputField.ContentType.Standard;
+            passwordLoginToggleText.text = "Sembunyikan kata sandi";
+        }
+        else
+        {
+            passwordLogin.contentType = TMP_InputField.ContentType.Password;
+            passwordLoginToggleText.text = "Tampilkan kata sandi";
         }
 
-        else if (!passwordLoginToggle.isOn) // kalau toggle ga dicentang
-        {
-            passwordLogin.contentType = TMP_InputField.ContentType.Password; // konten input password hidden
-            passwordLoginToggleText.text = "Show password"; // ngubah komponen teks toggle
-        }
-
-        passwordLogin.ForceLabelUpdate(); // mengupdate inputfield
+        passwordLogin.ForceLabelUpdate();
 
         if (passwordRegisterToggle.isOn)
         {
-            passwordRegister.contentType = TMP_InputField.ContentType.Standard; // konten input password biasa
+            passwordRegister.contentType = TMP_InputField.ContentType.Standard;
             confirmPasswordRegister.contentType = TMP_InputField.ContentType.Standard;
-            passwordRegisterToggleText.text = "Hide password"; // ngubah komponen teks toggle;
+            passwordRegisterToggleText.text = "Sembunyikan kata sandi";
         }
-
-        else if (!passwordRegisterToggle.isOn) // kalau toggle ga dicentang
+        else
         {
-            passwordRegister.contentType = TMP_InputField.ContentType.Password; // konten input password biasa
+            passwordRegister.contentType = TMP_InputField.ContentType.Password;
             confirmPasswordRegister.contentType = TMP_InputField.ContentType.Password;
-            passwordRegisterToggleText.text = "Show password"; // ngubah komponen teks toggle;
+            passwordRegisterToggleText.text = "Tampilkan kata sandi";
         }
 
-        passwordRegister.ForceLabelUpdate(); // mengupdate inputfield
-        confirmPasswordRegister.ForceLabelUpdate(); // mengupdate inputfield
+        passwordRegister.ForceLabelUpdate();
+        confirmPasswordRegister.ForceLabelUpdate();
+
+        // Periksa status kursor dan perbarui
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            isCursorLocked = false;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
     }
 }

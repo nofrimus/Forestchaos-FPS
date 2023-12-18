@@ -67,10 +67,6 @@ public class TimerSettings : MonoBehaviour
                 Debug.LogWarning("UserUI is already active in the scene.");
             }
         }
-        else
-        {
-            Debug.LogError("UserUI not found in the scene. Make sure the object is named correctly.");
-        }
 
         // Assuming "MenuUI" is another object in the scene that you want to deactivate
         GameObject menuUI = GameObject.Find("MenuUI");
